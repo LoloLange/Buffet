@@ -9,7 +9,7 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(window.location.hostname === "localhost" ? 'http://localhost:3001/sheets' : '/sheets');
+        const response = await fetch(window.location.hostname === "localhost" ? 'http://localhost:3001/sheets' : 'https://buffet-2kis.onrender.com/sheets');
         const result = await response.json();
         setData(result.getRows);
       } catch (error) {
@@ -77,7 +77,7 @@ function App() {
     };
 
     try {
-      const response = await fetch(window.location.hostname === "localhost" ? 'http://localhost:3001/sheets/add' : '/sheets/add', {
+      const response = await fetch(window.location.hostname === "localhost" ? 'http://localhost:3001/sheets/add' : 'https://buffet-2kis.onrender.com/sheets/add', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
