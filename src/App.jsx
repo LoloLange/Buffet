@@ -9,14 +9,18 @@ function App() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(window.location.hostname === "localhost" ? 'http://localhost:3001/sheets' : 'https://buffet-2kis.onrender.com/sheets');
+        const response = await fetch(
+          window.location.hostname === "localhost"
+            ? "http://localhost:3001/sheets"
+            : "https://buffet-2kis.onrender.com/sheets"
+        );
         const result = await response.json();
         setData(result.getRows);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -77,13 +81,18 @@ function App() {
     };
 
     try {
-      const response = await fetch(window.location.hostname === "localhost" ? 'http://localhost:3001/sheets/add' : 'https://buffet-2kis.onrender.com/sheets/add', {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(order), // Enviar toda la orden
-      });
+      const response = await fetch(
+        window.location.hostname === "localhost"
+          ? "http://localhost:3001/sheets/add"
+          : "https://buffet-2kis.onrender.com/sheets/add",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(order), // Enviar toda la orden
+        }
+      );
 
       if (response.ok) {
         location.reload();
@@ -175,14 +184,23 @@ function App() {
     return `$${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
   };
 
-  const [selectedTab, setSelectedTab] = useState("Espacio 1");
+  const [selectedTab, setSelectedTab] = useState(localStorage.getItem("selectedTab") || "Espacio 1");
 
   const tabItems = ["Espacio 1", "Espacio 2", "Espacio 3"];
 
+  // Guardar el tab seleccionado en el localStorage
   useEffect(() => {
-    // Resetear el carrito al cambiar de tab
-    setCart([]);
+    localStorage.setItem("selectedTab", selectedTab);
+    setCart([]); // Resetear el carrito al cambiar de tab
   }, [selectedTab]);
+
+  // Efecto para cargar el último tab desde el localStorage
+  useEffect(() => {
+    const storedTab = localStorage.getItem("selectedTab");
+    if (storedTab) {
+      setSelectedTab(storedTab);
+    }
+  }, []);
 
   if (showOrder) {
     const total = calculateTotal();
@@ -242,7 +260,7 @@ function App() {
         value={selectedTab}
         onValueChange={(val) => {
           setSelectedTab(val);
-          setCart([]);  // Resetea el carrito al cambiar de tab
+          setCart([]); // Resetea el carrito al cambiar de tab
         }}
       >
         <Tabs.List className="gap-x-1 min-[400px]:gap-x-2 min-[500px]:gap-x-3 py-1 overflow-x-auto px-px text-sm flex flex-wrap justify-center">
