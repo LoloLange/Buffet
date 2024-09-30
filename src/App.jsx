@@ -205,7 +205,7 @@ function App() {
             {cart.map(({ name, quantity, price }) => (
               <div
                 key={name}
-                className="bg-gray-800 p-4 rounded-lg mb-4 w-[500px]"
+                className="bg-gray-800 p-4 rounded-lg mb-4 w-screen min-[600px]:w-[500px]"
               >
                 <h2 className="text-xl font-semibold">{name}</h2>
                 <p className="text-gray-400">Cantidad: {quantity}</p>
@@ -215,10 +215,10 @@ function App() {
             <h2 className="text-2xl font-bold mt-6">
               Total: {formatPrice(total)}
             </h2>
-            <div className="mt-4">
+            <div className="mt-4 flex justify-center items-center gap-3 flex-wrap">
               <button
                 onClick={handleBackToProducts}
-                className="mr-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
                 Volver a Productos
               </button>
@@ -245,11 +245,11 @@ function App() {
           setCart([]);  // Resetea el carrito al cambiar de tab
         }}
       >
-        <Tabs.List className="gap-x-3 py-1 overflow-x-auto px-px text-sm sm:flex">
+        <Tabs.List className="gap-x-1 min-[400px]:gap-x-2 min-[500px]:gap-x-3 py-1 overflow-x-auto px-px text-sm flex flex-wrap justify-center">
           {tabItems.map((item, idx) => (
             <Tabs.Trigger
               key={idx}
-              className="data-[state=active]:bg-blue-900 data-[state=active]:text-gray-200 data-[state=active]:shadow-sm outline-gray-800 py-1.5 px-3 rounded-lg duration-150 text-gray-500 active:bg-gray-100 font-medium text-xl"
+              className="data-[state=active]:bg-blue-900 data-[state=active]:text-gray-200 data-[state=active]:shadow-sm outline-gray-800 py-2 px-3 rounded-lg duration-150 text-gray-500 active:bg-gray-100 font-medium text-xl"
               value={item}
             >
               {item}
@@ -270,7 +270,7 @@ function App() {
         </div>
       ) : (
         <div className="text-white text-center p-10 overflow-hidden">
-          <div className="grid pb-[100px] gap-4 min-[600px]:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          <div className="grid pb-[75px] min-[1400px]:pb-[100px] gap-4 min-[600px]:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {data
               .filter((item) => item[selectedTab.split(" ")[1]] > 0)
               .map((item, index) => {
@@ -325,7 +325,7 @@ function App() {
       )}
       <button
         onClick={handleGoToOrder}
-        className="flex text-gray-200 fixed bottom-0 justify-center items-center text-3xl font-bold bg-gray-900 text-gray-200 w-full h-[100px]"
+        className="flex text-gray-200 fixed bottom-0 justify-center items-center text-2xl h-[75px] min-[1400px]:text-3xl min-[1400px]:h-[100px] font-bold bg-gray-900 text-gray-200 w-full "
       >
         Ir a la orden
       </button>
