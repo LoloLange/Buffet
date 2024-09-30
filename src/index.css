@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.loadership_BCFHX {
+  display: flex;
+  position: relative;
+  width: 50px;
+  height: 50px;
+}
+
+.loadership_BCFHX div {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 50px;
+  height: 50px;
+  border: 6px solid #e3e3e333;
+  border-radius: 50%;
+}
+
+.loadership_BCFHX div:not(:nth-child(1)) {
+  clip-path: polygon(50% 50%, 0 0, 64% 0);
+  border: 6px solid #e3e3e3;
+  animation: loadership_BCFHX_spin 1.4s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+.loadership_BCFHX div:nth-child(2) {
+  animation-delay: 0s;
+}
+
+.loadership_BCFHX div:nth-child(3) {
+  animation-delay: -0.06s;
+}
+
+.loadership_BCFHX div:nth-child(4) {
+  animation-delay: -0.11s;
+}
+
+.loadership_BCFHX div:nth-child(5) {
+  animation-delay: -0.17s;
+}
+
+.loadership_BCFHX div:nth-child(6) {
+  animation-delay: -0.22s;
+}
+
+@keyframes loadership_BCFHX_spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
