@@ -6,18 +6,35 @@ function App() {
   const [cart, setCart] = useState([]); // Cambiar a array
   const [showOrder, setShowOrder] = useState(false); // Estado para manejar la navegación
 
+  const fetchDataWithRetry = async (url, retries = 1, delay = 1000) => {
+    for (let i = 0; i <= retries; i++) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Error en la respuesta");
+        const result = await response.json();
+        return result;
+      } catch (error) {
+        console.error(`Intento ${i + 1} fallido:`, error);
+        if (i < retries) {
+          // Esperar antes de reintentar
+          await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+      }
+    }
+    throw new Error("No se pudo obtener la data después de varios intentos.");
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
+        const result = await fetchDataWithRetry(
           window.location.hostname === "localhost"
             ? "http://localhost:3001/sheets"
             : "https://buffet-2kis.onrender.com/sheets"
         );
-        const result = await response.json();
         setData(result.getRows);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error final al obtener los datos:", error);
       }
     };
 
@@ -184,7 +201,9 @@ function App() {
     return `$${price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".")}`;
   };
 
-  const [selectedTab, setSelectedTab] = useState(localStorage.getItem("selectedTab") || "Espacio 1");
+  const [selectedTab, setSelectedTab] = useState(
+    localStorage.getItem("selectedTab") || "Espacio 1"
+  );
 
   const tabItems = ["Espacio 1", "Espacio 2", "Espacio 3"];
 
@@ -201,6 +220,10 @@ function App() {
       setSelectedTab(storedTab);
     }
   }, []);
+
+  const hasContentForTab = (tab) => {
+    return data.some((item) => item[tab.split(" ")[1]] > 0);
+  };
 
   if (showOrder) {
     const total = calculateTotal();
@@ -260,23 +283,26 @@ function App() {
         value={selectedTab}
         onValueChange={(val) => {
           setSelectedTab(val);
-          setCart([]); // Resetea el carrito al cambiar de tab
+          setCart([]);
         }}
       >
         <Tabs.List className="gap-x-1 min-[400px]:gap-x-2 min-[500px]:gap-x-3 py-1 overflow-x-auto px-px text-sm flex flex-wrap justify-center">
-          {tabItems.map((item, idx) => (
-            <Tabs.Trigger
-              key={idx}
-              className="data-[state=active]:bg-blue-900 data-[state=active]:text-gray-200 data-[state=active]:shadow-sm outline-gray-800 py-2 px-3 rounded-lg duration-150 text-gray-500 active:bg-gray-100 font-medium text-xl"
-              value={item}
-            >
-              {item}
-            </Tabs.Trigger>
-          ))}
+          {tabItems.map(
+            (item, idx) =>
+              hasContentForTab(item) && (
+                <Tabs.Trigger
+                  key={idx}
+                  className="data-[state=active]:bg-blue-900 data-[state=active]:text-gray-200 data-[state=active]:shadow-sm outline-gray-800 py-2 px-3 rounded-lg duration-150 text-gray-500 font-medium text-xl"
+                  value={item}
+                >
+                  {item}
+                </Tabs.Trigger>
+              )
+          )}
         </Tabs.List>
       </Tabs.Root>
       {data.length === 0 ? (
-        <div className="flex justify-center items-center py-[100px] pr-[15px]">
+        <div className="flex justify-center items-center py-[100px]">
           <div className="loadership_BCFHX">
             <div></div>
             <div></div>
