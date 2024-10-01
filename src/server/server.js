@@ -5,7 +5,7 @@ import { GoogleSpreadsheet } from "google-spreadsheet";
 import { JWT } from "google-auth-library";
 import { config } from "dotenv";
 import cors from "cors"; // Importar cors
-import path from 'path';
+import path from "path";
 import { fileURLToPath } from "url";
 
 // Obtener la ruta del archivo actual
@@ -13,7 +13,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename); // Obtener el directorio del archivo
 
 // Cargar el archivo .env desde la ruta deseada
-config({ path: path.resolve(__dirname, '../../.env') });
+config({ path: path.resolve(__dirname, "../../.env") });
 
 const app = express();
 const port = 3001;
@@ -52,7 +52,7 @@ app.get("/sheets", async (req, res) => {
 });
 
 app.post("/sheets/add", async (req, res) => {
-  const { items, totalPrice, space } = req.body; 
+  const { items, totalPrice, space } = req.body;
   try {
     const serviceAccountAuth = new JWT({
       email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -82,19 +82,28 @@ app.post("/sheets/add", async (req, res) => {
       .map(({ productName, quantity }) => `(${quantity}) ${productName}`)
       .join(", ");
 
-    const spaceNumber = space.split(" ")[1]
+    const spaceNumber = space.split(" ")[1];
 
     items.forEach(({ productName, quantity }) => {
-      const stockRow = stockRows.find((row) => row.get('Nombre del Producto') === productName);
+      const stockRow = stockRows.find(
+        (row) => row.get("Nombre del Producto") === productName
+      );
 
       if (stockRow._rawData[spaceNumber]) {
         const currentStock = parseInt(stockRow._rawData[spaceNumber]);
         const newStock = currentStock - quantity;
 
         if (newStock >= 0) {
-          stockRows[stockRow._rowNumber - 2].set(`Stock ${spaceNumber}`, newStock); // Actualizar el stock en la fila
-          const soldUnits = stockRows[stockRow._rowNumber - 2].get('Unidades vendidas')
-          stockRows[stockRow._rowNumber - 2].set('Unidades vendidas', parseInt(soldUnits) + quantity); // Actualizar el stock en la fila
+          stockRows[stockRow._rowNumber - 2].set(
+            `Stock ${spaceNumber}`,
+            newStock
+          ); // Actualizar el stock en la fila
+          const soldUnits =
+            stockRows[stockRow._rowNumber - 2].get("Unidades vendidas");
+          stockRows[stockRow._rowNumber - 2].set(
+            "Unidades vendidas",
+            parseInt(soldUnits) + quantity
+          ); // Actualizar el stock en la fila
           stockRows[stockRow._rowNumber - 2].save(); // Guardar la fila actualizada
         } else {
           console.warn(`No hay suficiente stock para ${productName}`);
@@ -123,6 +132,33 @@ app.post("/sheets/add", async (req, res) => {
   }
 });
 
+const keepServerAlive = () => {
+  const url = "https://buffet-2kis.onrender.com/sheets"; // URL de tu servidor Render
+  const interval = 780000; // Intervalo de 13 minutos
+
+  const reloadWebsite = async () => {
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        console.log(
+          `Reloaded at ${new Date().toISOString()}: Status Code ${
+            response.status
+          }`
+        );
+      } else {
+        throw new Error(`Status Code ${response.status}`);
+      }
+    } catch (error) {
+      console.error(
+        `Error reloading at ${new Date().toISOString()}: ${error.message}`
+      );
+    }
+  };
+
+  setInterval(reloadWebsite, interval);
+};
+
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
+  keepServerAlive();
 });
