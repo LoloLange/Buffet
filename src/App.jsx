@@ -5,6 +5,8 @@ function App() {
   const [data, setData] = useState([]);
   const [cart, setCart] = useState([]); // Cambiar a array
   const [showOrder, setShowOrder] = useState(false); // Estado para manejar la navegación
+  const [creatingOrder, setCreatingOrder] = useState(false);
+  const [category, setCategory] = useState("Dulces y postres");
 
   const fetchDataWithRetry = async (url, retries = 1, delay = 1000) => {
     for (let i = 0; i <= retries; i++) {
@@ -83,6 +85,7 @@ function App() {
   };
 
   const handleSubmitOrder = async () => {
+    setCreatingOrder(true);
     const products = cart.map((item) => {
       return {
         productName: item.name,
@@ -113,6 +116,7 @@ function App() {
 
       if (response.ok) {
         location.reload();
+        setCreatingOrder(false);
       } else {
         console.error("Error al enviar la orden:", response.statusText);
       }
@@ -225,6 +229,8 @@ function App() {
     return data.some((item) => item[tab.split(" ")[1]] > 0);
   };
 
+  const categories = ["Dulces y postres", "Snacks", "Bebidas"];
+
   if (showOrder) {
     const total = calculateTotal();
 
@@ -265,6 +271,7 @@ function App() {
               </button>
               <button
                 onClick={handleSubmitOrder}
+                disabled={creatingOrder}
                 className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
               >
                 Realizar Orden
@@ -286,7 +293,7 @@ function App() {
           setCart([]);
         }}
       >
-        <Tabs.List className="gap-x-1 min-[400px]:gap-x-2 min-[500px]:gap-x-3 py-1 overflow-x-auto px-px text-sm flex flex-wrap justify-center">
+        <Tabs.List className="gap-x-1 min-[400px]:gap-x-2 min-[500px]:gap-x-3 py-1 overflow-x-auto px-px text-sm flex max-[350px]:flex-col flex-wrap justify-center">
           {tabItems.map(
             (item, idx) =>
               hasContentForTab(item) && (
@@ -299,6 +306,28 @@ function App() {
                 </Tabs.Trigger>
               )
           )}
+        </Tabs.List>
+      </Tabs.Root>
+
+      <Tabs.Root
+        className={`max-w-screen-xl mt-5 mx-auto flex justify-center ${
+          data.length === 0 && "hidden"
+        }`}
+        value={category}
+        onValueChange={(val) => {
+          setCategory(val);
+        }}
+      >
+        <Tabs.List className="gap-x-1 min-[400px]:gap-x-2 min-[500px]:gap-x-3 py-1 overflow-x-auto px-px text-sm flex max-[350px]:flex-col flex-wrap justify-center">
+          {categories.map((item, idx) => (
+            <Tabs.Trigger
+              key={idx}
+              className="data-[state=active]:bg-green-900 data-[state=active]:text-gray-200 data-[state=active]:shadow-sm outline-gray-800 py-1.5 px-3 rounded-lg duration-150 text-gray-500 text-lg"
+              value={item}
+            >
+              {item}
+            </Tabs.Trigger>
+          ))}
         </Tabs.List>
       </Tabs.Root>
       {data.length === 0 ? (
@@ -317,6 +346,12 @@ function App() {
           <div className="grid pb-[75px] min-[1400px]:pb-[100px] gap-4 min-[600px]:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {data
               .filter((item) => item[selectedTab.split(" ")[1]] > 0)
+              .filter((item) => item[6] === category).length === 0 && (
+              <p>No hay productos para mostrar.</p>
+            )}
+            {data
+              .filter((item) => item[selectedTab.split(" ")[1]] > 0)
+              .filter((item) => item[6] === category)
               .map((item, index) => {
                 const itemName = item[0];
                 const itemPrice = item[4];
