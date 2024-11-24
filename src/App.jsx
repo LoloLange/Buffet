@@ -6,7 +6,7 @@ function App() {
   const [cart, setCart] = useState([]); // Cambiar a array
   const [showOrder, setShowOrder] = useState(false); // Estado para manejar la navegación
   const [creatingOrder, setCreatingOrder] = useState(false);
-  const [category, setCategory] = useState("Dulces y postres");
+  const [category, setCategory] = useState("Bebidas");
 
   const fetchDataWithRetry = async (url, retries = 1, delay = 1000) => {
     for (let i = 0; i <= retries; i++) {
@@ -188,6 +188,11 @@ function App() {
     setShowOrder(false);
   };
 
+  const handleEliminateOrder = () => {
+    setCart([]);
+    setShowOrder(false);
+  };
+
   // Función para calcular el total de la orden
   const calculateTotal = () => {
     return cart.reduce((total, { quantity, price }) => {
@@ -229,7 +234,11 @@ function App() {
     return data.some((item) => item[tab.split(" ")[1]] > 0);
   };
 
-  const categories = ["Dulces y postres", "Snacks", "Bebidas"];
+  const removeFromCart = (productName) => {
+    setCart(cart.filter((item) => item.name !== productName));
+  };
+
+  const categories = ["Bebidas", "Comidas", "Postres"];
 
   if (showOrder) {
     const total = calculateTotal();
@@ -252,11 +261,28 @@ function App() {
             {cart.map(({ name, quantity, price }) => (
               <div
                 key={name}
-                className="bg-gray-800 p-4 rounded-lg mb-4 w-screen min-[600px]:w-[500px]"
+                className="bg-gray-800 p-4 rounded-lg mb-4 w-screen min-[600px]:w-[500px] relative"
               >
-                <h2 className="text-xl font-semibold">{name}</h2>
+                <p className="text-xl font-semibold">{name}</p>
                 <p className="text-gray-400">Cantidad: {quantity}</p>
                 <p className="text-gray-400">Precio: {formatPrice(price)}</p>
+                <svg
+                  className="text-red-600 absolute right-4 top-10 cursor-pointer"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  onClick={() => removeFromCart(name)}
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                  <path d="M18 6l-12 12" />
+                  <path d="M6 6l12 12" />
+                </svg>
               </div>
             ))}
             <h2 className="text-2xl font-bold mt-6">
@@ -267,7 +293,13 @@ function App() {
                 onClick={handleBackToProducts}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
-                Volver a Productos
+                Volver
+              </button>
+              <button
+                onClick={handleEliminateOrder}
+                className="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Eliminar Orden
               </button>
               <button
                 onClick={handleSubmitOrder}
