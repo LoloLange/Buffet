@@ -104,6 +104,35 @@ app.post("/sheets/add", async (req, res) => {
             "Unidades vendidas",
             parseInt(soldUnits) + quantity
           ); // Actualizar el stock en la fila
+          const price = parseFloat(
+            stockRows[stockRow._rowNumber - 2]
+              .get("Precio de Venta")
+              .replace("$", "")
+              .replace(".", "") // Elimina separadores de miles
+              .replace(",", ".") // Convierte la coma decimal a punto
+          );
+
+          const gained = parseFloat(
+            stockRows[stockRow._rowNumber - 2]
+              .get("Dinero obtenido")
+              .replace("$", "")
+              .replace(".", "") // Elimina separadores de miles
+              .replace(",", ".") // Convierte la coma decimal a punto
+          );
+
+          const totalGained = gained + price * quantity;
+
+          // Formatear con separador de miles y decimales correctos
+          const formattedTotalGained = totalGained
+            .toFixed(2) // Asegura dos decimales
+            .replace(".", ",") // Cambia el punto decimal a coma
+            .replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Añade separador de miles con punto
+
+          stockRows[stockRow._rowNumber - 2].set(
+            "Dinero obtenido",
+            "$" + formattedTotalGained
+          );
+
           stockRows[stockRow._rowNumber - 2].save(); // Guardar la fila actualizada
         } else {
           console.warn(`No hay suficiente stock para ${productName}`);
@@ -119,6 +148,7 @@ app.post("/sheets/add", async (req, res) => {
       Productos: productDescriptions,
       Precio: totalPrice,
       Espacio: space,
+      Entregado: "checkbox",
     });
 
     res.status(200).send("Nueva fila agregada con éxito y stock actualizado");
