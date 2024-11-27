@@ -115,6 +115,8 @@ function App() {
       );
 
       if (response.ok) {
+        const data = await response.json(); // Parsear el JSON de la respuesta
+        alert('Número de orden: #' + data.orderId)
         location.reload();
         setCreatingOrder(false);
       } else {

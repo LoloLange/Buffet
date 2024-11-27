@@ -151,7 +151,10 @@ app.post("/sheets/add", async (req, res) => {
       Entregado: "checkbox",
     });
 
-    res.status(200).send("Nueva fila agregada con éxito y stock actualizado");
+    res.status(200).send({
+      message: "Nueva fila agregada con éxito y stock actualizado",
+      orderId: newId,
+    });
   } catch (error) {
     console.error(error);
     res
